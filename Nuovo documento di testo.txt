@@ -1,0 +1,104 @@
+if self.encoder_type == 'stft':
+           
+            magn = transforms.mag(enc_out)
+            magn = torch.log(magn**2 + 1e-7)
+            magn = magn.unsqueeze(1)
+            magn = magn.permute(0, 1, 3, 2)
+            previous_magn = magn
+
+            angles = transforms.angle(enc_out)
+            angles = angles.unsqueeze(1)
+            angles = angles.permute(0, 1, 3, 2)
+            angles_cos = torch.cos(angles)
+            angles_sin = torch.sin(angles)
+
+            magn = magn[:,:,:,:-1]
+            angles_cos = angles_cos[:,:,:,:-1]
+            angles_sin = angles_sin[:,:,:,:-1]
+            print(f"dimensioni magn: {magn.shape}" )
+           
+            x = torch.cat((magn, angles_cos, angles_sin), dim = 1)
+            print(f"dimensioni tensore: {x.shape}" )
+
+
+        elif self.encoder_type == 'free':
+
+            magn = transforms.mag(enc_out)
+            magn = torch.log(magn**2 + 1e-7)
+            #print(f"forma audio:  {magn.shape} " )
+
+            magn = magn.unsqueeze(1)
+            #print(f"forma audio:  {magn.shape} " )
+
+            magn = magn.permute(0, 1, 3, 2)
+            #print(f"forma audio:  {magn.shape} " )
+
+            previous_magn = magn
+        
+
+            angles = transforms.angle(enc_out)
+            angles = angles.unsqueeze(1)
+            angles = angles.permute(0, 1, 3, 2)
+            angles_cos = torch.cos(angles)
+            angles_sin = torch.sin(angles)
+
+            #magn = magn[:,:,:,:-1]
+            #angles_cos = angles_cos[:,:,:,:-1]
+            #angles_sin = angles_sin[:,:,:,:-1]
+
+            #print(f"forma audio:  {magn.shape} " )
+            print(f"dimensioni magn: {magn.shape}" )
+           
+            x = torch.cat((magn, angles_cos, angles_sin), dim = 1)
+            print(f"dimensioni tensore: {x.shape}" )
+
+
+           
+           # x = torch.cat((magn, angles_cos, angles_sin), dim = 1)
+
+        elif self.encoder_type == 'analytic_free':
+           # print(f"dimensioni : {enc_out.shape}" )
+           # print(f"Min enc_out real: {torch.min(enc_out)}, Max enc_out real: {torch.max(enc_out)}")
+            #print(f"Min enc_out imag: {torch.min(enc_out.imag)}, Max enc_out imag: {torch.max(enc_out.imag)}")
+
+            print(f"outttputtt: {enc_out}")
+            magn = transforms.mag(enc_out, EPS=1e-8)
+            #print(f"dimensioni magn: {magn.shape}" )
+            print(f"Before log, Min magn: {torch.min(magn)}, Max magn: {torch.max(magn)}")
+            print(f"Any NaN in magn before log: {torch.isnan(magn).any()}")
+            print(f"Any inf in magn before log: {torch.isinf(magn).any()}")
+
+            magn = torch.log(magn**2 + 1e-5)
+            #print(f"forma audio:  {magn.shape} " )
+            print(f"After log, Min magn: {torch.min(magn)}, Max magn: {torch.max(magn)}")
+            print(f"Any NaN in magn after log: {torch.isnan(magn).any()}")
+            print(f"Any inf in magn after log: {torch.isinf(magn).any()}")
+
+            magn = magn.unsqueeze(1)
+            #print(f"forma audio:  {magn.shape} " )
+
+            magn = magn.permute(0, 1, 3, 2)
+            #print(f"forma audio:  {magn.shape} " )
+           
+            previous_magn = magn
+        
+
+            angles = transforms.angle(enc_out)
+            angles = angles.unsqueeze(1)
+            angles = angles.permute(0, 1, 3, 2)
+            angles_cos = torch.cos(angles)
+            angles_sin = torch.sin(angles)
+
+           
+
+            #x = torch.cat((magn, angles_cos, angles_sin), dim = 1)
+            #print(f"dimensioni magn: {magn.shape}" )
+           
+            x = torch.cat((magn, angles_cos, angles_sin), dim = 1)
+           # print(f"dimensioni tensore: {x.shape}" )
+
+
+        elif self.encoder_type == 'param_sinc':
+            print("param_sinc")
+        else:
+            raise ValueError(f"Unknown encoder type: {self.encoder_type}")
